@@ -11,7 +11,7 @@ class User extends Authenticatable
 
     protected $table = 'User';
 
-    protected $primaryKey = 'userID';
+    protected $primaryKey = 'userId';
 
     const CREATED_AT = 'createdAt';
 
