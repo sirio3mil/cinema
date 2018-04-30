@@ -6,7 +6,7 @@
  * Time: 17:02
  */
 
-namespace App\Libraries\Scrapers\Imdb;
+namespace App\Libraries\Scrapers\Imdb\Pages;
 
 
 class Keywords extends Page

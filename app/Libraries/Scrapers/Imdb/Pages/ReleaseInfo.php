@@ -6,7 +6,9 @@
  * Time: 13:27
  */
 
-namespace App\Libraries\Scrapers\Imdb;
+namespace App\Libraries\Scrapers\Imdb\Pages;
+
+use App\Libraries\Scrapers\Imdb\Objects\Release;
 
 
 class ReleaseInfo extends Page

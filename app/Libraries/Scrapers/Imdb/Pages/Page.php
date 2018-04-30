@@ -6,7 +6,7 @@
  * Time: 13:28
  */
 
-namespace App\Libraries\Scrapers\Imdb;
+namespace App\Libraries\Scrapers\Imdb\Pages;
 
 
 class Page

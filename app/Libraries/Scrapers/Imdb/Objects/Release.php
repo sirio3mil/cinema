@@ -6,7 +6,7 @@
  * Time: 16:24
  */
 
-namespace App\Libraries\Scrapers\Imdb;
+namespace App\Libraries\Scrapers\Imdb\Objects;
 
 
 class Release

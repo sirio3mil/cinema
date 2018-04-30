@@ -6,7 +6,7 @@
  * Time: 13:06
  */
 
-namespace App\Libraries\Scrapers\Imdb;
+namespace App\Libraries\Scrapers\Imdb\Utils;
 
 
 class Cleaner
