@@ -19,6 +19,8 @@ class Main extends Page
     protected const COUNTRY_PATTERN = '|country_of_origin=([^>]+)>([^>]+)<|U';
     protected const LANGUAGE_PATTERN = '|primary_language=([^>]+)>([^>]+)<|U';
     protected const GENRE_PATTERN = '|genre/([^>]+)>([^>]+)<|U';
+    protected const SEASON_PATTERN = '|>Season ([0-9]{1,2}) <|U';
+    protected const EPISODE_PATTERN = '|> Episode ([0-9]{1,2})<|U';
 
     protected const SEASON_SPLITTER = '<h4 class="float-left">Seasons</h4>';
     protected const RECOMMENDATIONS_SPLITTER = '<h2>Recommendations</h2>';
@@ -28,6 +30,7 @@ class Main extends Page
     protected const EPISODES_PAGE = 'episodes';
     protected const LOCATIONS_PAGE = 'locations';
     protected const KEYWORDS_PAGE = 'keywords';
+    protected const PARENTAL_GUIDE_PAGE = 'parentalguide';
 
     protected $url;
 
@@ -36,6 +39,7 @@ class Main extends Page
     protected $episodesList;
     protected $locations;
     protected $keywords;
+    protected $parentalGuide;
 
     public $imdbNumber;
     public $season;
@@ -320,31 +324,40 @@ class Main extends Page
         return $matches;
     }
 
-    public function dameCertificaciones()
+    public function setParentalGuide(): Main
     {
-        $matches = [];
-        if (!$this->isChapter && (strpos($this->content, "See all certifications") !== false)) {
-            $html = file_get_contents($this->url . "parentalguide");
-            if (!empty($html)) {
-                preg_match_all('|<a href=\"/search/title\?certificates=([^>]+)\">([^>]+)</a>|U', $html, $matches);
-            }
-        }
-        return $matches;
+        $this->parentalGuide = (new ParentalGuide())->setContent(Cleaner::getText($this->url . static::PARENTAL_GUIDE_PAGE));
+        return $this;
     }
 
-    public function actualizaTemporada()
+    public function getParentalGuide(): ?ParentalGuide
+    {
+        return $this->parentalGuide;
+    }
+
+    public function setSeasonData(): Main
     {
         if ($this->isChapter) {
-            $matches = [];
-            preg_match_all('|>Season ([0-9]{1,2}) <|U', $this->content, $matches);
-            if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
-                $this->season = (int)($matches[1][0]);
-            }
-            $matches = [];
-            preg_match_all('|> Episode ([0-9]{1,2})<|U', $this->content, $matches);
-            if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
-                $this->chapter = (int)($matches[1][0]);
-            }
+            $this->setSeasonNumber()->setEpisodeNumber();
+        }
+        return $this;
+    }
+
+    protected function setSeasonNumber(): Main
+    {
+        $matches = [];
+        preg_match_all(static::SEASON_PATTERN, $this->content, $matches);
+        if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
+            $this->season = (int)($matches[1][0]);
+        }
+    }
+
+    protected function setEpisodeNumber(): Main
+    {
+        $matches = [];
+        preg_match_all(static::EPISODE_PATTERN, $this->content, $matches);
+        if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
+            $this->chapter = (int)($matches[1][0]);
         }
     }
 }
