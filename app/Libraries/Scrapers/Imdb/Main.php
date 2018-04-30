@@ -67,10 +67,20 @@ class Main extends Page
         return $this;
     }
 
+    public function getReleaseInfo(): ?ReleaseInfo
+    {
+        return $this->releaseInfo;
+    }
+
     protected function setCredits(): Main
     {
         $this->credits = (new Credits())->setContent(Cleaner::getText($this->url . static::FULL_CREDITS_PAGE));
         return $this;
+    }
+
+    public function getCredits(): ?Credits
+    {
+        return $this->credits;
     }
 
     protected function setImdbNumber(): Main
@@ -136,6 +146,11 @@ class Main extends Page
         return $this;
     }
 
+    public function getEpisodesList(): ?EpisodesList
+    {
+        return $this->episodesList;
+    }
+
     public function getTitle(): ?string
     {
         return $this->title;
@@ -165,42 +180,6 @@ class Main extends Page
     {
         preg_match_all(static::DURATION_PATTERN, $this->content, $matches);
         return (!empty($matches[1][0])) ? (int)trim($matches[1][0]) : null;
-    }
-
-    public function dameEstrenos()
-    {
-        $matches = array();
-        if (!empty($this->pagesContent['info'])) {
-            preg_match_all('|<td><a href=\"([^>]+)\">([^>]+)</a></td><td class=\"release_date\">([^>]+)<a href=\"([^>]+)\">([^>]+)</a></td><td>([^>]*)</td>|U',
-                $this->pagesContent['info'], $matches);
-        }
-        /*
-         * 2 nombre del pais USA
-         * 3 fecha 29 September
-         * 5 año 2014
-         * 6 detalle
-         */
-        return $matches;
-    }
-
-    public function dameEstrenoAnterior($timestamp)
-    {
-        $minimo = $timestamp;
-        $datos = $this->dameEstrenos();
-        if (!empty($datos[0])) {
-            $elementos = count($datos[0]);
-            for ($i = 0; $i < $elementos; $i++) {
-                $dia_mes = trim($datos[3][$i]);
-                $anno = trim($datos[5][$i]);
-                if (!empty($dia_mes) && !empty($anno)) {
-                    $actual = strtotime("{$dia_mes} {$anno}");
-                    if ($actual && $minimo > $actual) {
-                        $minimo = $actual;
-                    }
-                }
-            }
-        }
-        return $minimo;
     }
 
     public function damePuntuacionMedia()
