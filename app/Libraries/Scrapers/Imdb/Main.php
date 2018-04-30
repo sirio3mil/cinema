@@ -18,6 +18,7 @@ class Main extends Page
     protected const RECOMMENDATIONS_PATTERN = '|/title/tt([^>]+)/\">|U';
     protected const COUNTRY_PATTERN = '|country_of_origin=([^>]+)>([^>]+)<|U';
     protected const LANGUAGE_PATTERN = '|primary_language=([^>]+)>([^>]+)<|U';
+    protected const GENRE_PATTERN = '|genre/([^>]+)>([^>]+)<|U';
 
     protected const SEASON_SPLITTER = '<h4 class="float-left">Seasons</h4>';
     protected const RECOMMENDATIONS_SPLITTER = '<h2>Recommendations</h2>';
@@ -26,7 +27,7 @@ class Main extends Page
     protected const FULL_CREDITS_PAGE = 'fullcredits';
     protected const EPISODES_PAGE = 'episodes';
     protected const LOCATIONS_PAGE = 'locations';
-
+    protected const KEYWORDS_PAGE = 'keywords';
 
     protected $url;
 
@@ -34,6 +35,7 @@ class Main extends Page
     protected $credits;
     protected $episodesList;
     protected $locations;
+    protected $keywords;
 
     public $imdbNumber;
     public $season;
@@ -301,29 +303,26 @@ class Main extends Page
         return $matches;
     }
 
-    public function dameKeywords()
+    public function setKeywords(): Main
     {
-        $matches = array();
-        if (strpos($this->content, "Plot Keywords:") !== false) {
-            $html = file_get_contents($this->url . "keywords");
-            if (!empty($html)) {
-                preg_match_all('|/keyword/([^>]+)\?|U', $html, $matches);
-                return $matches;
-            }
-        }
-        return $matches;
+        $this->keywords = (new Keywords())->setContent(Cleaner::getText($this->url . static::KEYWORDS_PAGE));
     }
 
-    public function dameGeneros()
+    public function getKeywords(): ?Keywords
     {
-        $matches = array();
-        preg_match_all('|genre/([^>]+)>([^>]+)<|U', $this->content, $matches);
+        return $this->keywords;
+    }
+
+    public function getGenres(): array
+    {
+        $matches = [];
+        preg_match_all(static::GENRE_PATTERN, $this->content, $matches);
         return $matches;
     }
 
     public function dameCertificaciones()
     {
-        $matches = array();
+        $matches = [];
         if (!$this->isChapter && (strpos($this->content, "See all certifications") !== false)) {
             $html = file_get_contents($this->url . "parentalguide");
             if (!empty($html)) {
@@ -336,18 +335,16 @@ class Main extends Page
     public function actualizaTemporada()
     {
         if ($this->isChapter) {
-            $sub_coincidencias = array();
-            preg_match_all('|>Season ([0-9]{1,2}) <|U', $this->content, $sub_coincidencias);
-            if (!empty($sub_coincidencias[1][0]) && is_numeric($sub_coincidencias[1][0])) {
-                $this->season = (int)($sub_coincidencias[1][0]);
+            $matches = [];
+            preg_match_all('|>Season ([0-9]{1,2}) <|U', $this->content, $matches);
+            if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
+                $this->season = (int)($matches[1][0]);
             }
-            $sub_coincidencias = array();
-            preg_match_all('|> Episode ([0-9]{1,2})<|U', $this->content, $sub_coincidencias);
-            if (!empty($sub_coincidencias[1][0]) && is_numeric($sub_coincidencias[1][0])) {
-                $this->chapter = (int)($sub_coincidencias[1][0]);
+            $matches = [];
+            preg_match_all('|> Episode ([0-9]{1,2})<|U', $this->content, $matches);
+            if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
+                $this->chapter = (int)($matches[1][0]);
             }
         }
     }
 }
-
-?>
