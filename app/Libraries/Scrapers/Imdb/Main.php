@@ -11,6 +11,10 @@ class Main extends Page
     protected const TV_SHOW_PATTERN = '|<div class=\"titleParent\"><a href=\"/title/tt([0-9]{7})|U';
     protected const YEAR_PATTERN = '|<title>([^>]+)([1-2][0-9][0-9][0-9])([^>]+)</title>|U';
     protected const DURATION_PATTERN = '|datetime=\"PT([0-9]{1,3})M\"|U';
+    protected const SCORE_PATTERN = '|<span itemprop="ratingValue">([^>]+)</span>|U';
+    protected const VOTES_PATTERN = '|<span class="small" itemprop="ratingCount">([^>]+)</span>|U';
+    protected const COLOR_PATTERN = '|<a href=\"/search/title\?colors=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U';
+    protected const SOUND_PATTERN = '|<a href=\"/search/title\?sound_mixes=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U';
 
     protected const SEASON_SPLITTER = '<h4 class="float-left">Seasons</h4>';
 
@@ -182,48 +186,44 @@ class Main extends Page
         return (!empty($matches[1][0])) ? (int)trim($matches[1][0]) : null;
     }
 
-    public function damePuntuacionMedia()
+    public function getScore(): int
     {
         $matches = array();
-        // <span itemprop="ratingValue">7,1</span>
-        preg_match_all('|<span itemprop="ratingValue">([^>]+)</span>|U', $this->content, $matches);
+        preg_match_all(static::SCORE_PATTERN, $this->content, $matches);
         if (empty($matches[1][0])) {
             return 0;
         }
         return intval(filter_var($matches[1][0], FILTER_SANITIZE_NUMBER_INT)) / 20;
     }
 
-    public function dameVotosTotales()
+    public function getVotes(): int
     {
         $matches = array();
-        // <span class="small" itemprop="ratingCount">58.111</span>
-        preg_match_all('|<span class="small" itemprop="ratingCount">([^>]+)</span>|U', $this->content, $matches);
+        preg_match_all(static::VOTES_PATTERN, $this->content, $matches);
         if (empty($matches[1][0])) {
             return 0;
         }
         return intval(filter_var($matches[1][0], FILTER_SANITIZE_NUMBER_INT));
     }
 
-    public function dameColor()
+    public function getColor(): ?string
     {
         $matches = array();
-        preg_match_all('|<a href=\"/search/title\?colors=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U', $this->content,
-            $matches);
-        return (!empty($matches[2][0])) ? $this->validaCampo(strip_tags($matches[2][0])) : false;
+        preg_match_all(static::COLOR_PATTERN, $this->content,$matches);
+        return (!empty($matches[2][0])) ? Cleaner::clearField(strip_tags($matches[2][0])) : null;
     }
 
-    public function dameSonido()
+    public function getSound(): ?string
     {
-        preg_match_all('|<a href=\"/search/title\?sound_mixes=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U', $this->content,
-            $matches);
+        preg_match_all(static::SOUND_PATTERN, $this->content,$matches);
         if (!empty($matches[2]) && is_array($matches[2])) {
-            $sonido = "";
+            $sounds = "";
             foreach ($matches[2] as $sound) {
-                $sonido .= trim(strip_tags($sound)) . ", ";
+                $sounds .= trim(strip_tags($sound)) . ", ";
             }
-            return $this->validaCampo(substr($sonido, 0, -2));
+            return Cleaner::clearField(substr($sounds, 0, -2));
         }
-        return false;
+        return null;
     }
 
     public function dameRecomendada()
