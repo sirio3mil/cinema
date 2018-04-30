@@ -15,12 +15,17 @@ class Main extends Page
     protected const VOTES_PATTERN = '|<span class="small" itemprop="ratingCount">([^>]+)</span>|U';
     protected const COLOR_PATTERN = '|<a href=\"/search/title\?colors=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U';
     protected const SOUND_PATTERN = '|<a href=\"/search/title\?sound_mixes=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U';
+    protected const RECOMMENDATIONS_PATTERN = '|/title/tt([^>]+)/\">|U';
+    protected const COUNTRY_PATTERN = '|country_of_origin=([^>]+)>([^>]+)<|U';
+    protected const LANGUAGE_PATTERN = '|primary_language=([^>]+)>([^>]+)<|U';
 
     protected const SEASON_SPLITTER = '<h4 class="float-left">Seasons</h4>';
+    protected const RECOMMENDATIONS_SPLITTER = '<h2>Recommendations</h2>';
 
     protected const RELEASE_INFO_PAGE = 'releaseinfo';
     protected const FULL_CREDITS_PAGE = 'fullcredits';
     protected const EPISODES_PAGE = 'episodes';
+    protected const LOCATIONS_PAGE = 'locations';
 
 
     protected $url;
@@ -28,6 +33,7 @@ class Main extends Page
     protected $releaseInfo;
     protected $credits;
     protected $episodesList;
+    protected $locations;
 
     public $imdbNumber;
     public $season;
@@ -40,13 +46,18 @@ class Main extends Page
     public function __construct($url)
     {
         $this->url = $url;
+    }
+
+    public function init(): void
+    {
         $this->setContent(Cleaner::getText($this->url))
             ->setTvShowFlags()
             ->setTitle()
             ->setImdbNumber()
             ->setReleaseInfo()
             ->setCredits()
-            ->setEpisodesList();
+            ->setEpisodesList()
+            ->setLocations();
     }
 
     public function setContent(string $content): Page
@@ -58,7 +69,7 @@ class Main extends Page
         return $this;
     }
 
-    protected function setReleaseInfo(): Main
+    public function setReleaseInfo(): Main
     {
         $this->releaseInfo = new ReleaseInfo();
         if (strpos($this->content, "Also Known As:") === false) {
@@ -76,7 +87,7 @@ class Main extends Page
         return $this->releaseInfo;
     }
 
-    protected function setCredits(): Main
+    public function setCredits(): Main
     {
         $this->credits = (new Credits())->setContent(Cleaner::getText($this->url . static::FULL_CREDITS_PAGE));
         return $this;
@@ -87,14 +98,14 @@ class Main extends Page
         return $this->credits;
     }
 
-    protected function setImdbNumber(): Main
+    public function setImdbNumber(): Main
     {
         preg_match_all(static::IMDB_NUMBER_PATTERN, $this->url, $matches);
         $this->imdbNumber = (int)($matches[1][0]);
         return $this;
     }
 
-    protected function setTvShowFlags(): Main
+    public function setTvShowFlags(): Main
     {
         $this->isChapter = false;
         $matches = [
@@ -113,7 +124,7 @@ class Main extends Page
         return $this;
     }
 
-    protected function setTitle(): Main
+    public function setTitle(): Main
     {
         $matches = [];
         preg_match_all(static::TITLE_PATTERN, $this->content, $matches);
@@ -141,7 +152,7 @@ class Main extends Page
         return $this;
     }
 
-    protected function setEpisodesList(): Main
+    public function setEpisodesList(): Main
     {
         $this->episodesList = new EpisodesList();
         if ($this->isTvShow) {
@@ -226,49 +237,35 @@ class Main extends Page
         return null;
     }
 
-    public function dameRecomendada()
+    public function getRecommendations(): ?int
     {
-        if (strpos($this->content, "<h2>Recommendations</h2>") !== false) {
-            $arrayTemp = explode("<h2>Recommendations</h2>", $this->content);
+        if (strpos($this->content, static::RECOMMENDATIONS_SPLITTER) !== false) {
+            $arrayTemp = explode(static::RECOMMENDATIONS_SPLITTER, $this->content);
             if (!empty($arrayTemp[1])) {
-                preg_match_all('|/title/tt([^>]+)/\">|U', $arrayTemp[1], $matches);
+                preg_match_all(static::RECOMMENDATIONS_PATTERN, $arrayTemp[1], $matches);
                 if (!empty($matches[1][0])) {
                     $imdb = trim(strip_tags($matches[1][0]));
-                    settype($imdb, 'integer');
-                    return $imdb;
+                    return (int)$imdb;
                 }
             }
         }
-        return false;
+        return null;
     }
 
-    public function dameTituloAdicionales()
+    public function setLocations(): Main
     {
-        $matches = array();
-        if (!empty($this->pagesContent['info'])) {
-            preg_match_all('|<tr class="([^>]+)"><td>([^>]+)</td><td>([^>]+)</td></tr>|U', $this->pagesContent['info'],
-                $matches);
-        }
-        return $matches;
+        $this->locations = (new Locations())->setContent(Cleaner::getText($this->url . static::LOCATIONS_PAGE));
+        return $this;
     }
 
-    public function dameLocalizacion()
+    public function getLocations(): ?Locations
     {
-        $matches = array();
-        if (strpos($this->content, "Filming Locations:") !== false) {
-            $html = static::clean($this->url . "locations");
-            if (!empty($html)) {
-                preg_match_all('|/search/title\?locations=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U', $html,
-                    $matches);
-                return $matches;
-            }
-        }
-        return $matches;
+        return $this->locations;
     }
 
-    public static function damePaisReal($pais)
+    public static function getMappedCountry(string $countryName): string
     {
-        switch ($pais) {
+        switch ($countryName) {
             case "PuertoRico":
                 return "Puerto Rico";
             case "HongKong":
@@ -287,20 +284,20 @@ class Main extends Page
             case "Federal Republic of Yugoslavia":
                 return "Yugoslavia";
         }
-        return $pais;
+        return $countryName;
     }
 
-    public function damePaises()
+    public function getCountries(): array
     {
-        $matches = array();
-        preg_match_all('|country_of_origin=([^>]+)>([^>]+)<|U', $this->content, $matches);
+        $matches = [];
+        preg_match_all(static::COUNTRY_PATTERN, $this->content, $matches);
         return $matches;
     }
 
-    public function dameIdiomas()
+    public function getLanguages(): array
     {
-        $matches = array();
-        preg_match_all('|primary_language=([^>]+)>([^>]+)<|U', $this->content, $matches);
+        $matches = [];
+        preg_match_all(static::LANGUAGE_PATTERN, $this->content, $matches);
         return $matches;
     }
 
