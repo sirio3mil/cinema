@@ -16,33 +16,35 @@ class ReleaseInfo extends Page
 
     public function getReleaseDates(): array
     {
-        $matches = [];
+        $releases = [];
         if ($this->content) {
             preg_match_all(static::RELEASE_DATE_PATTERN, $this->content, $matches);
+            /*
+             * 2 USA
+             * 3 29 September
+             * 5 2014
+             * 6 detail
+             */
+            foreach ($matches as $match) {
+                $releases[] = (new Release())->setFromScrapper($match);
+            }
         }
-        /*
-         * 2 USA
-         * 3 29 September
-         * 5 2014
-         * 6 detail
-         */
-        return $matches;
+
+        /** var Release[] $matches */
+        return $releases;
     }
 
     public static function getPreviousReleaseDate(int $timestamp, array $releases): int
     {
         $min = $timestamp;
-        if (!empty($releases[0])) {
-            $elements = count($releases[0]);
-            for ($i = 0; $i < $elements; $i++) {
-                $monthDay = trim($releases[3][$i]);
-                $year = trim($releases[5][$i]);
-                if (!empty($monthDay) && !empty($year)) {
-                    $actual = strtotime("{$monthDay} {$year}");
-                    if ($actual && $min > $actual) {
-                        $min = $actual;
-                    }
-                }
+        if (!$releases){
+            return 0;
+        }
+        /** @var Release $release */
+        foreach ($releases as $release){
+            $actual = $release->getDate()->getTimestamp();
+            if ($actual && $min > $actual) {
+                $min = $actual;
             }
         }
         return $min;
