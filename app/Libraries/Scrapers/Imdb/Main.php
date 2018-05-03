@@ -38,9 +38,14 @@ class Main
     /** @var Pages\ParentalGuide $parentalGuide */
     protected $parentalGuide;
 
-    public function __construct($url)
+    public function __construct(int $imdbNumber)
     {
-        $this->url = $url;
+        $this->url = self::createUrl($imdbNumber);
+    }
+
+    public static function createUrl(int $imdbNumber): string
+    {
+        return 'https://www.imdb.com/title/tt' . str_pad($imdbNumber, 7, 0, STR_PAD_LEFT) . '/';
     }
 
     public function init(): void
@@ -63,20 +68,26 @@ class Main
 
     public function getHome(): Home
     {
+        if(!$this->homePage instanceof Home){
+            $this->setHome();
+        }
         return $this->homePage;
     }
 
     public function setReleaseInfo(): Main
     {
         $this->releaseInfo = new ReleaseInfo();
-        if($this->getHome()->haveReleaseInfo()){
+        if ($this->getHome()->haveReleaseInfo()) {
             $this->releaseInfo->setContent(Cleaner::getText($this->url . static::RELEASE_INFO_PAGE));
         }
         return $this;
     }
 
-    public function getReleaseInfo(): ?ReleaseInfo
+    public function getReleaseInfo(): ReleaseInfo
     {
+        if(!$this->releaseInfo instanceof ReleaseInfo){
+            $this->setReleaseInfo();
+        }
         return $this->releaseInfo;
     }
 
@@ -86,22 +97,28 @@ class Main
         return $this;
     }
 
-    public function getCredits(): ?Credits
+    public function getCredits(): Credits
     {
+        if(!$this->credits instanceof Credits){
+            $this->setCredits();
+        }
         return $this->credits;
     }
 
     public function setEpisodesList(): Main
     {
         $this->episodesList = new EpisodesList();
-        if ($this->isTvShow) {
+        if ($this->getHome()->isTvShow()) {
             $this->episodesList->setContent(Cleaner::getText($this->url . static::EPISODES_PAGE));
         }
         return $this;
     }
 
-    public function getEpisodesList(): ?EpisodesList
+    public function getEpisodesList(): EpisodesList
     {
+        if(!$this->episodesList instanceof EpisodesList){
+            $this->setEpisodesList();
+        }
         return $this->episodesList;
     }
 
@@ -111,8 +128,11 @@ class Main
         return $this;
     }
 
-    public function getLocations(): ?Locations
+    public function getLocations(): Locations
     {
+        if(!$this->locations instanceof Locations){
+            $this->setLocations();
+        }
         return $this->locations;
     }
 
@@ -143,10 +163,14 @@ class Main
     public function setKeywords(): Main
     {
         $this->keywords = (new Keywords())->setContent(Cleaner::getText($this->url . static::KEYWORDS_PAGE));
+        return $this;
     }
 
-    public function getKeywords(): ?Keywords
+    public function getKeywords(): Keywords
     {
+        if(!$this->keywords instanceof Keywords){
+            $this->setKeywords();
+        }
         return $this->keywords;
     }
 
@@ -156,8 +180,11 @@ class Main
         return $this;
     }
 
-    public function getParentalGuide(): ?ParentalGuide
+    public function getParentalGuide(): ParentalGuide
     {
+        if(!$this->parentalGuide instanceof ParentalGuide){
+            $this->setParentalGuide();
+        }
         return $this->parentalGuide;
     }
 }

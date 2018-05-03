@@ -34,11 +34,28 @@ class Home extends Page
 
     public $imdbNumber;
     public $season;
-    public $chapter;
-    public $isChapter;
-    public $isTvShow;
+    public $episode;
     public $title;
     public $status;
+
+    protected $episodeFlag;
+    protected $tvShow;
+
+    public function __construct()
+    {
+        $this->episodeFlag = false;
+        $this->tvShow = false;
+    }
+
+    public function isTvShow(): bool
+    {
+        return $this->tvShow;
+    }
+
+    public function isEpisode(): bool
+    {
+        return $this->episodeFlag;
+    }
 
     public function setContent(string $content): Page
     {
@@ -69,7 +86,7 @@ class Home extends Page
 
     public function setTvShowFlags(): Main
     {
-        $this->isChapter = false;
+        $this->episodeFlag = false;
         $matches = [
             'Episode cast overview',
             'Episode credited cast',
@@ -77,12 +94,12 @@ class Home extends Page
         ];
         foreach ($matches as $match) {
             if (strpos($this->content, $match) !== false) {
-                $this->isChapter = true;
-                $this->isTvShow = false;
+                $this->episodeFlag = true;
+                $this->tvShow = false;
                 return $this;
             }
         }
-        $this->isTvShow = (strpos($this->content, static::SEASON_SPLITTER) !== false) ? true : false;
+        $this->tvShow = (strpos($this->content, static::SEASON_SPLITTER) !== false) ? true : false;
         return $this;
     }
 
@@ -94,7 +111,7 @@ class Home extends Page
             throw new \Exception("Error fetching original title");
         }
         $title = html_entity_decode(trim($matches[1][0]), ENT_QUOTES);
-        if ($this->isChapter) {
+        if ($this->episodeFlag) {
             $parts = explode("\"", $title);
             $title = end($parts);
         } else {
@@ -121,7 +138,7 @@ class Home extends Page
 
     public function getTvShow(): ?int
     {
-        if ($this->isChapter) {
+        if ($this->episodeFlag) {
             preg_match_all(static::TV_SHOW_PATTERN, $this->content, $matches);
             if(!empty($matches[1][0])){
                 return (int)($matches[1][0]);
@@ -223,7 +240,7 @@ class Home extends Page
 
     public function setSeasonData(): Main
     {
-        if ($this->isChapter) {
+        if ($this->episodeFlag) {
             $this->setSeasonNumber()->setEpisodeNumber();
         }
         return $this;
@@ -243,7 +260,7 @@ class Home extends Page
         $matches = [];
         preg_match_all(static::EPISODE_PATTERN, $this->content, $matches);
         if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
-            $this->chapter = (int)($matches[1][0]);
+            $this->episode = (int)($matches[1][0]);
         }
     }
 }
