@@ -18,6 +18,7 @@ class Getter
             throw new \Exception('Wrong getter url');
         }
         $curl = new Curl();
+        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
         $curl->get($url);
         if ($curl->error) {
             throw new \Exception($curl->errorMessage, $curl->errorCode);
