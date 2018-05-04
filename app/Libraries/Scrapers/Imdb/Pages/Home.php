@@ -40,19 +40,19 @@ class Home extends Page
     protected $episodeFlag;
     protected $tvShow;
 
-    public function __construct()
-    {
-        $this->episodeFlag = false;
-        $this->tvShow = false;
-    }
-
     public function isTvShow(): bool
     {
+        if($this->tvShow === null){
+            $this->setTvShowFlags();
+        }
         return $this->tvShow;
     }
 
     public function isEpisode(): bool
     {
+        if($this->episodeFlag === null){
+            $this->setTvShowFlags();
+        }
         return $this->episodeFlag;
     }
 
@@ -76,7 +76,7 @@ class Home extends Page
         return true;
     }
 
-    public function setTvShowFlags(): Main
+    public function setTvShowFlags(): Home
     {
         $this->episodeFlag = false;
         $matches = [
@@ -95,7 +95,7 @@ class Home extends Page
         return $this;
     }
 
-    public function setTitle(): Main
+    public function setTitle(): Home
     {
         $matches = [];
         preg_match_all(static::TITLE_PATTERN, $this->content, $matches);
@@ -230,7 +230,7 @@ class Home extends Page
         return $matches;
     }
 
-    public function setSeasonData(): Main
+    public function setSeasonData(): Home
     {
         if ($this->episodeFlag) {
             $this->setSeasonNumber()->setEpisodeNumber();
@@ -238,21 +238,23 @@ class Home extends Page
         return $this;
     }
 
-    protected function setSeasonNumber(): Main
+    protected function setSeasonNumber(): Home
     {
         $matches = [];
         preg_match_all(static::SEASON_PATTERN, $this->content, $matches);
         if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
             $this->season = (int)($matches[1][0]);
         }
+        return $this;
     }
 
-    protected function setEpisodeNumber(): Main
+    protected function setEpisodeNumber(): Home
     {
         $matches = [];
         preg_match_all(static::EPISODE_PATTERN, $this->content, $matches);
         if (!empty($matches[1][0]) && is_numeric($matches[1][0])) {
             $this->episode = (int)($matches[1][0]);
         }
+        return $this;
     }
 }
