@@ -20,7 +20,7 @@ class Getter
         $curl = new Curl();
         $curl->get($url);
         if ($curl->error) {
-            throw new \Exception($curl->error_code);
+            throw new \Exception($curl->errorMessage, $curl->errorCode);
         }
         return $curl->response;
     }
