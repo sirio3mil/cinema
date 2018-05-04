@@ -24,7 +24,7 @@ class Credits extends Page
         $this->setFolder('fullcredits');
     }
 
-    public function setContent(string $content): Page
+    public function setContent(?string $content): Page
     {
         parent::setContent($content);
 

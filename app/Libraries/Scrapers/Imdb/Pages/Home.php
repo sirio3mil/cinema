@@ -56,7 +56,7 @@ class Home extends Page
         return $this->episodeFlag;
     }
 
-    public function setContent(string $content): Page
+    public function setContent(?string $content): Page
     {
         parent::setContent($content);
         if (!$this->content) {
