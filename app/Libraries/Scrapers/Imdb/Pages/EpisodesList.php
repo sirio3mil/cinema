@@ -14,6 +14,11 @@ class EpisodesList extends Page
 
     protected const EPISODE_LIST_PATTERN = '|<a href=\"/title/([^>]+)\">|U';
 
+    public function __construct()
+    {
+        $this->setFolder('episodes');
+    }
+
     public function getEpisodes(): array
     {
         if (!$this->content) {

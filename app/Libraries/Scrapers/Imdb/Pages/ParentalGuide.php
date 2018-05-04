@@ -11,6 +11,12 @@ namespace App\Libraries\Scrapers\Imdb\Pages;
 
 class ParentalGuide extends Page
 {
+
+    public function __construct()
+    {
+        $this->setFolder('parentalguide');
+    }
+
     public function getCertificates(): array
     {
         $matches = [];

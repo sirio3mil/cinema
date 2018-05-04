@@ -14,6 +14,11 @@ class Keywords extends Page
 
     protected const KEYWORD_PATTERN = '|/keyword/([^>]+)\?|U';
 
+    public function __construct()
+    {
+        $this->setFolder('keywords');
+    }
+
     public function getKeywords(): array
     {
         $matches = [];

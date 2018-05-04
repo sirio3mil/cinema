@@ -11,11 +11,11 @@ namespace App\Libraries\Scrapers\Imdb\Utils;
 
 class Cleaner
 {
-    public static function getText(string $url): string
+    public static function clearText(string $value): string
     {
         return str_replace("> <", "><",
             preg_replace('/\s+/', ' ',
-                str_replace(["\r\n", "\n\r", "\n", "\r"], "", file_get_contents($url))));
+                str_replace(["\r\n", "\n\r", "\n", "\r"], "", $value)));
     }
 
     public static function clearField(string $value): ?string

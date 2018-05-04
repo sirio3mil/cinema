@@ -11,7 +11,13 @@ namespace App\Libraries\Scrapers\Imdb\Pages;
 
 class Locations extends Page
 {
-    public function dameLocalizacion()
+
+    public function __construct()
+    {
+        $this->setFolder('locations');
+    }
+
+    public function getLocations()
     {
         $matches = array();
         if (strpos($this->content, "Filming Locations:") !== false) {

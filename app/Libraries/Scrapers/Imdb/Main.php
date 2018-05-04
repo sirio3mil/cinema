@@ -9,19 +9,11 @@ use App\Libraries\Scrapers\Imdb\Pages\Keywords;
 use App\Libraries\Scrapers\Imdb\Pages\Locations;
 use App\Libraries\Scrapers\Imdb\Pages\ParentalGuide;
 use App\Libraries\Scrapers\Imdb\Pages\ReleaseInfo;
-use App\Libraries\Scrapers\Imdb\Utils\Cleaner;
 
 class Main
 {
 
-    protected const RELEASE_INFO_PAGE = 'releaseinfo';
-    protected const FULL_CREDITS_PAGE = 'fullcredits';
-    protected const EPISODES_PAGE = 'episodes';
-    protected const LOCATIONS_PAGE = 'locations';
-    protected const KEYWORDS_PAGE = 'keywords';
-    protected const PARENTAL_GUIDE_PAGE = 'parentalguide';
-
-    protected $url;
+    protected $imdbNumber;
 
     /** @var Pages\Home $homePage */
     protected $homePage;
@@ -40,12 +32,7 @@ class Main
 
     public function __construct(int $imdbNumber)
     {
-        $this->url = self::createUrl($imdbNumber);
-    }
-
-    public static function createUrl(int $imdbNumber): string
-    {
-        return 'https://www.imdb.com/title/tt' . str_pad($imdbNumber, 7, 0, STR_PAD_LEFT) . '/';
+        $this->imdbNumber = $imdbNumber;
     }
 
     public function init(): void
@@ -62,7 +49,7 @@ class Main
 
     public function setHome(): Main
     {
-        $this->homePage = (new Home())->setContent(Cleaner::getText($this->url));
+        $this->homePage = (new Home())->setImdbNumber($this->imdbNumber)->setContentFromUrl();
         return $this;
     }
 
@@ -76,9 +63,9 @@ class Main
 
     public function setReleaseInfo(): Main
     {
-        $this->releaseInfo = new ReleaseInfo();
+        $this->releaseInfo = (new ReleaseInfo())->setImdbNumber($this->imdbNumber);
         if ($this->getHome()->haveReleaseInfo()) {
-            $this->releaseInfo->setContent(Cleaner::getText($this->url . static::RELEASE_INFO_PAGE));
+            $this->releaseInfo->setContentFromUrl();
         }
         return $this;
     }
@@ -93,7 +80,7 @@ class Main
 
     public function setCredits(): Main
     {
-        $this->credits = (new Credits())->setContent(Cleaner::getText($this->url . static::FULL_CREDITS_PAGE));
+        $this->credits = (new Credits())->setImdbNumber($this->imdbNumber)->setContentFromUrl();
         return $this;
     }
 
@@ -107,9 +94,9 @@ class Main
 
     public function setEpisodesList(): Main
     {
-        $this->episodesList = new EpisodesList();
+        $this->episodesList = (new EpisodesList())->setImdbNumber($this->imdbNumber);
         if ($this->getHome()->isTvShow()) {
-            $this->episodesList->setContent(Cleaner::getText($this->url . static::EPISODES_PAGE));
+            $this->episodesList->setContentFromUrl();
         }
         return $this;
     }
@@ -124,7 +111,7 @@ class Main
 
     public function setLocations(): Main
     {
-        $this->locations = (new Locations())->setContent(Cleaner::getText($this->url . static::LOCATIONS_PAGE));
+        $this->locations = (new Locations())->setImdbNumber($this->imdbNumber)->setContentFromUrl();
         return $this;
     }
 
@@ -162,7 +149,7 @@ class Main
 
     public function setKeywords(): Main
     {
-        $this->keywords = (new Keywords())->setContent(Cleaner::getText($this->url . static::KEYWORDS_PAGE));
+        $this->keywords = (new Keywords())->setImdbNumber($this->imdbNumber)->setContentFromUrl();
         return $this;
     }
 
@@ -176,7 +163,7 @@ class Main
 
     public function setParentalGuide(): Main
     {
-        $this->parentalGuide = (new ParentalGuide())->setContent(Cleaner::getText($this->url . static::PARENTAL_GUIDE_PAGE));
+        $this->parentalGuide = (new ParentalGuide())->setImdbNumber($this->imdbNumber)->setContentFromUrl();
         return $this;
     }
 

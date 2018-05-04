@@ -32,7 +32,6 @@ class Home extends Page
     protected const SEASON_SPLITTER = '<h4 class="float-left">Seasons</h4>';
     protected const RECOMMENDATIONS_SPLITTER = '<h2>Recommendations</h2>';
 
-    public $imdbNumber;
     public $season;
     public $episode;
     public $title;
@@ -75,13 +74,6 @@ class Home extends Page
             return false;
         }
         return true;
-    }
-
-    public function setImdbNumber(): Main
-    {
-        preg_match_all(static::IMDB_NUMBER_PATTERN, $this->url, $matches);
-        $this->imdbNumber = (int)($matches[1][0]);
-        return $this;
     }
 
     public function setTvShowFlags(): Main

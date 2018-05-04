@@ -19,6 +19,11 @@ class Credits extends Page
 
     protected $writersContent;
 
+    public function __construct()
+    {
+        $this->setFolder('fullcredits');
+    }
+
     public function setContent(string $content): Page
     {
         parent::setContent($content);
