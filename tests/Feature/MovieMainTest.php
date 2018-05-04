@@ -11,7 +11,7 @@ namespace Tests\Feature;
 use App\Libraries\Scrapers\Imdb\Main;
 use PHPUnit\Framework\TestCase;
 
-class MainTest extends TestCase
+class MovieMainTest extends TestCase
 {
 
     /** @var Main $imdbScrapper */
@@ -36,11 +36,6 @@ class MainTest extends TestCase
     public function testGetLocations()
     {
         $this->assertNotEmpty($this->imdbScrapper->getLocations()->getContent());
-    }
-
-    public function testGetEpisodesList()
-    {
-        $this->assertNotEmpty($this->imdbScrapper->getEpisodesList()->getContent());
     }
 
     public function testGetHome()
