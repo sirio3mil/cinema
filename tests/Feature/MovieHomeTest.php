@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class MovieHomeTest extends TestCase
 {
 
-    /** @var Main $imdbScrapper */
+    /** @var Home $imdbScrapper */
     protected $imdbScrapper;
 
     public function __construct(?string $name = null, array $data = [], string $dataName = '')
@@ -30,17 +30,12 @@ class MovieHomeTest extends TestCase
 
     public function testGetTvShow()
     {
-
+        $this->assertEquals(null, $this->imdbScrapper->getTvShow());
     }
 
     public function testHaveReleaseInfo()
     {
-
-    }
-
-    public function testSetTvShowFlags()
-    {
-
+        $this->assertEquals(true, $this->imdbScrapper->haveReleaseInfo());
     }
 
     public function testGetLanguages()
@@ -50,27 +45,22 @@ class MovieHomeTest extends TestCase
 
     public function testIsTvShow()
     {
-
+        $this->assertEquals(false, $this->imdbScrapper->isTvShow());
     }
 
     public function testGetTitle()
     {
-
-    }
-
-    public function testSetSeasonData()
-    {
-
+        $this->assertEquals('Overboard', $this->imdbScrapper->getTitle());
     }
 
     public function testGetDuration()
     {
-
+        $this->assertEquals(112, $this->imdbScrapper->getDuration());
     }
 
     public function testGetColor()
     {
-
+        $this->assertEquals('Color', $this->imdbScrapper->getColor());
     }
 
     public function testGetRecommendations()
@@ -85,7 +75,7 @@ class MovieHomeTest extends TestCase
 
     public function testIsEpisode()
     {
-
+        $this->assertEquals(false, $this->imdbScrapper->isEpisode());
     }
 
     public function testGetGenres()
@@ -93,23 +83,18 @@ class MovieHomeTest extends TestCase
 
     }
 
-    public function testSetTitle()
-    {
-
-    }
-
     public function testGetSound()
     {
-
+        $this->assertEquals('Dolby Digital', $this->imdbScrapper->getSound());
     }
 
     public function testGetScore()
     {
-
+        $this->assertGreaterThan(0, $this->imdbScrapper->getScore());
     }
 
     public function testGetVotes()
     {
-
+        $this->assertGreaterThan(0, $this->imdbScrapper->getVotes());
     }
 }

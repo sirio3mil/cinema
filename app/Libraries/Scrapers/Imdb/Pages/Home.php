@@ -125,6 +125,9 @@ class Home extends Page
 
     public function getTitle(): ?string
     {
+        if(is_null($this->title)){
+            $this->setTitle();
+        }
         return $this->title;
     }
 
