@@ -32,10 +32,9 @@ class Home extends Page
 
     protected const SEASON_SPLITTER = '<h4 class="float-left">Seasons</h4>';
 
-    public $season;
-    public $episode;
-    public $title;
-    public $status;
+    protected $season;
+    protected $episode;
+    protected $title;
 
     protected $episodeFlag;
     protected $tvShow;
@@ -269,6 +268,14 @@ class Home extends Page
         return $this;
     }
 
+    public function getSeasonNumber(): ?int
+    {
+        if ($this->episodeFlag && is_null($this->season)) {
+            $this->setSeasonNumber();
+        }
+        return $this->season;
+    }
+
     protected function setEpisodeNumber(): Home
     {
         $matches = [];
@@ -277,5 +284,13 @@ class Home extends Page
             $this->episode = (int)($matches[1][0]);
         }
         return $this;
+    }
+
+    public function getEpisodeNumber(): ?int
+    {
+        if ($this->episodeFlag && is_null($this->episode)) {
+            $this->setEpisodeNumber();
+        }
+        return $this->episode;
     }
 }
