@@ -102,7 +102,7 @@ class Home extends Page
             throw new \Exception("Error fetching original title");
         }
         $title = html_entity_decode(trim($matches[1][0]), ENT_QUOTES);
-        if ($this->episodeFlag) {
+        if ($this->isEpisode()) {
             $parts = explode("\"", $title);
             $title = end($parts);
         } else {
@@ -132,7 +132,7 @@ class Home extends Page
 
     public function getTvShow(): ?int
     {
-        if ($this->episodeFlag) {
+        if ($this->isEpisode()) {
             preg_match_all(static::TV_SHOW_PATTERN, $this->content, $matches);
             if(!empty($matches[1][0])){
                 return (int)($matches[1][0]);
@@ -252,7 +252,7 @@ class Home extends Page
 
     public function setSeasonData(): Home
     {
-        if ($this->episodeFlag) {
+        if ($this->isEpisode()) {
             $this->setSeasonNumber()->setEpisodeNumber();
         }
         return $this;
@@ -270,7 +270,7 @@ class Home extends Page
 
     public function getSeasonNumber(): ?int
     {
-        if ($this->episodeFlag && is_null($this->season)) {
+        if ($this->isEpisode() && is_null($this->season)) {
             $this->setSeasonNumber();
         }
         return $this->season;
@@ -288,7 +288,7 @@ class Home extends Page
 
     public function getEpisodeNumber(): ?int
     {
-        if ($this->episodeFlag && is_null($this->episode)) {
+        if ($this->isEpisode() && is_null($this->episode)) {
             $this->setEpisodeNumber();
         }
         return $this->episode;
