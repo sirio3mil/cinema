@@ -40,7 +40,7 @@ class MovieHomeTest extends TestCase
 
     public function testGetLanguages()
     {
-
+        $this->assertEquals(['English'], $this->imdbScrapper->getLanguages());
     }
 
     public function testIsTvShow()
@@ -65,12 +65,12 @@ class MovieHomeTest extends TestCase
 
     public function testGetRecommendations()
     {
-
+        $this->assertArraySubset(['6791096'], $this->imdbScrapper->getRecommendations());
     }
 
     public function testGetCountries()
     {
-
+        $this->assertEquals(['USA'], $this->imdbScrapper->getCountries());
     }
 
     public function testIsEpisode()
@@ -80,12 +80,12 @@ class MovieHomeTest extends TestCase
 
     public function testGetGenres()
     {
-
+        $this->assertEquals(['Comedy', 'Romance'], $this->imdbScrapper->getGenres());
     }
 
-    public function testGetSound()
+    public function testGetSounds()
     {
-        $this->assertEquals('Dolby Digital', $this->imdbScrapper->getSound());
+        $this->assertEquals(['Dolby Digital'], $this->imdbScrapper->getSounds());
     }
 
     public function testGetScore()

@@ -8,6 +8,7 @@
 
 namespace App\Libraries\Scrapers\Imdb\Pages;
 
+use App\Libraries\Scrapers\Imdb\Mapper\Country;
 use App\Libraries\Scrapers\Imdb\Utils\Cleaner;
 
 class Home extends Page
@@ -22,15 +23,14 @@ class Home extends Page
     protected const VOTES_PATTERN = '|<span class="small" itemprop="ratingCount">([^>]+)</span>|U';
     protected const COLOR_PATTERN = '|<a href=\"/search/title\?colors=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U';
     protected const SOUND_PATTERN = '|<a href=\"/search/title\?sound_mixes=([^>]+)\"itemprop=\'url\'>([^>]+)</a>|U';
-    protected const RECOMMENDATIONS_PATTERN = '|/title/tt([^>]+)/\">|U';
     protected const COUNTRY_PATTERN = '|country_of_origin=([^>]+)>([^>]+)<|U';
     protected const LANGUAGE_PATTERN = '|primary_language=([^>]+)>([^>]+)<|U';
+    protected const RECOMMENDATIONS_PATTERN = '|data-tconst=\"tt([0-9]{7})\"|U';
     protected const GENRE_PATTERN = '|genre/([^>]+)>([^>]+)<|U';
     protected const SEASON_PATTERN = '|>Season ([0-9]{1,2}) <|U';
     protected const EPISODE_PATTERN = '|> Episode ([0-9]{1,2})<|U';
 
     protected const SEASON_SPLITTER = '<h4 class="float-left">Seasons</h4>';
-    protected const RECOMMENDATIONS_SPLITTER = '<h2>Recommendations</h2>';
 
     public $season;
     public $episode;
@@ -184,53 +184,71 @@ class Home extends Page
         return (!empty($matches[2][0])) ? Cleaner::clearField(strip_tags($matches[2][0])) : null;
     }
 
-    public function getSound(): ?string
+    public function getSounds(): array
     {
+        $sounds = [];
+        $matches = [];
         preg_match_all(static::SOUND_PATTERN, $this->content,$matches);
-        if (!empty($matches[2]) && is_array($matches[2])) {
-            $sounds = "";
+        if (array_key_exists(2, $matches) && is_array($matches[2])) {
             foreach ($matches[2] as $sound) {
-                $sounds .= trim(strip_tags($sound)) . ", ";
+                $sounds[] = Cleaner::clearField($sound);
             }
-            return Cleaner::clearField(substr($sounds, 0, -2));
         }
-        return null;
+        return $sounds;
     }
 
-    public function getRecommendations(): ?int
+    public function getRecommendations(): array
     {
-        if (strpos($this->content, static::RECOMMENDATIONS_SPLITTER) !== false) {
-            $arrayTemp = explode(static::RECOMMENDATIONS_SPLITTER, $this->content);
-            if (!empty($arrayTemp[1])) {
-                preg_match_all(static::RECOMMENDATIONS_PATTERN, $arrayTemp[1], $matches);
-                if (!empty($matches[1][0])) {
-                    $imdb = trim(strip_tags($matches[1][0]));
-                    return (int)$imdb;
-                }
+        $recommended = [];
+        $matches = [];
+        preg_match_all(static::RECOMMENDATIONS_PATTERN, $this->content, $matches);
+        if (array_key_exists(1, $matches) && is_array($matches[1])) {
+            foreach ($matches[1] as $imdb) {
+                $recommended[] = (int)Cleaner::clearField($imdb);
             }
         }
-        return null;
+        return $recommended;
     }
 
     public function getCountries(): array
     {
+        $countries = [];
         $matches = [];
         preg_match_all(static::COUNTRY_PATTERN, $this->content, $matches);
-        return $matches;
+        if(array_key_exists(2, $matches) && is_array($matches[2])) {
+            foreach ($matches[2] as $country) {
+                $countries[] = Country::getMappedValue(Cleaner::clearField($country));
+            }
+        }
+        return array_unique($countries);
     }
 
     public function getLanguages(): array
     {
+        $languages = [];
         $matches = [];
         preg_match_all(static::LANGUAGE_PATTERN, $this->content, $matches);
-        return $matches;
+        if(array_key_exists(2, $matches) && is_array($matches[2])) {
+            foreach ($matches[2] as $language) {
+                $languages[] = Cleaner::clearField($language);
+            }
+        }
+        return array_unique($languages);
     }
 
     public function getGenres(): array
     {
+        $genres = [];
         $matches = [];
         preg_match_all(static::GENRE_PATTERN, $this->content, $matches);
-        return $matches;
+        if(array_key_exists(2, $matches) && is_array($matches[2])) {
+            foreach ($matches[2] as $key => $genre) {
+                if(stripos($matches[1][$key], "tt_stry_gnr")) {
+                    $genres[] = Cleaner::clearField($genre);
+                }
+            }
+        }
+        return array_unique($genres);
     }
 
     public function setSeasonData(): Home

@@ -23,6 +23,6 @@ class Cleaner
         if (empty($value)) {
             return null;
         }
-        return trim(str_replace("%20", " ", str_replace("\"", "", $value)));
+        return trim(str_replace("%20", " ", str_replace("\"", "", strip_tags($value))));
     }
 }
