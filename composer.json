@@ -7,10 +7,6 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/sirio3mil/sqlsrv"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/sirio3mil/imdb-scraper"
         }
     ],
@@ -20,7 +16,6 @@
         "laravel/framework": "5.6.*",
         "laravel/tinker": "~1.0",
         "php-curl-class/php-curl-class": "@dev",
-        "sirio3mil/sqlsrv": "dev-master",
         "sirio3mil/imdb-scraper": "dev-master"
     },
     "require-dev": {

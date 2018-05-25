@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "40db6b4948f6396f08d7d4229bc175e0",
+    "content-hash": "e431c67e8eb571626160f862760f5a94",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1328,12 +1328,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sirio3mil/imdb-scraper.git",
-                "reference": "481b379c6ebca2780ed42787dbcc0f78e014c868"
+                "reference": "04a7ddf3ca172f0fc4f01c79de2b55c4f1684894"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sirio3mil/imdb-scraper/zipball/481b379c6ebca2780ed42787dbcc0f78e014c868",
-                "reference": "481b379c6ebca2780ed42787dbcc0f78e014c868",
+                "url": "https://api.github.com/repos/sirio3mil/imdb-scraper/zipball/04a7ddf3ca172f0fc4f01c79de2b55c4f1684894",
+                "reference": "04a7ddf3ca172f0fc4f01c79de2b55c4f1684894",
                 "shasum": ""
             },
             "require": {
@@ -1353,37 +1353,7 @@
                 "source": "https://github.com/sirio3mil/imdb-scraper/tree/master",
                 "issues": "https://github.com/sirio3mil/imdb-scraper/issues"
             },
-            "time": "2018-05-25T08:55:55+00:00"
-        },
-        {
-            "name": "sirio3mil/sqlsrv",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sirio3mil/sqlsrv.git",
-                "reference": "49a5c4e0602ae31c8e828cecaeb10cf0a4b8d115"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sirio3mil/sqlsrv/zipball/49a5c4e0602ae31c8e828cecaeb10cf0a4b8d115",
-                "reference": "49a5c4e0602ae31c8e828cecaeb10cf0a4b8d115",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Sqlsrv\\": "src/"
-                }
-            },
-            "description": "SQL Server object oriented interface for PHP",
-            "support": {
-                "source": "https://github.com/sirio3mil/sqlsrv/tree/master",
-                "issues": "https://github.com/sirio3mil/sqlsrv/issues"
-            },
-            "time": "2018-05-25T08:41:05+00:00"
+            "time": "2018-05-25T09:07:08+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -4189,7 +4159,6 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "php-curl-class/php-curl-class": 20,
-        "sirio3mil/sqlsrv": 20,
         "sirio3mil/imdb-scraper": 20
     },
     "prefer-stable": true,
