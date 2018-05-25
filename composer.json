@@ -4,12 +4,24 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "type": "project",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/sirio3mil/sqlsrv"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/sirio3mil/imdb-scraper"
+        }
+    ],
     "require": {
         "php": ">=7.2",
         "fideloper/proxy": "~4.0",
         "laravel/framework": "5.6.*",
         "laravel/tinker": "~1.0",
-        "php-curl-class/php-curl-class": "@dev"
+        "php-curl-class/php-curl-class": "@dev",
+        "sirio3mil/sqlsrv": "dev-master",
+        "sirio3mil/imdb-scraper": "dev-master"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
